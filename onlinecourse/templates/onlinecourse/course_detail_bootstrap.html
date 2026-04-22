@@ -11,12 +11,10 @@
 
 <body>
 
-<!-- Navigation bar -->
+<!-- Navigation -->
 <nav class="navbar navbar-light bg-light">
     <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
-        </div>
+        <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">Home</a>
 
         <ul class="nav navbar-nav navbar-right">
             {% if user.is_authenticated %}
@@ -31,9 +29,9 @@
                     <form class="form-inline" action="{% url 'onlinecourse:login' %}" method="post">
                         {% csrf_token %}
                         <div class="input-group">
-                            <input type="text" class="form-control" placeholder="Username" name="username">
-                            <input type="password" class="form-control" placeholder="Password" name="psw">
-                            <button class="btn btn-primary" type="submit">Login</button>
+                            <input type="text" class="form-control" name="username" placeholder="Username">
+                            <input type="password" class="form-control" name="psw" placeholder="Password">
+                            <button class="btn btn-primary">Login</button>
                             <a class="btn btn-link" href="{% url 'onlinecourse:registration' %}">Sign Up</a>
                         </div>
                     </form>
@@ -43,37 +41,35 @@
     </div>
 </nav>
 
-<!-- Page content -->
+<!-- Content -->
 <div class="container-fluid">
 
     <h2>{{ course.name }}</h2>
 
     <!-- Lessons -->
-    <div class="card-columns-vertical">
-        {% for lesson in course.lesson_set.all %}
-            <div class="card mt-1">
-                <div class="card-header">
-                    <h5>Lesson {{ lesson.order|add:1 }}: {{ lesson.title }}</h5>
-                </div>
-                <div class="card-body">
-                    {{ lesson.content }}
-                </div>
+    {% for lesson in course.lesson_set.all %}
+        <div class="card mt-2">
+            <div class="card-header">
+                Lesson {{ lesson.order|add:1 }}: {{ lesson.title }}
             </div>
-        {% endfor %}
-    </div>
+            <div class="card-body">
+                {{ lesson.content }}
+            </div>
+        </div>
+    {% endfor %}
 
     <hr>
 
-    <!-- ================= EXAM SECTION ================= -->
+    <!-- EXAM SECTION -->
     {% if user.is_authenticated %}
 
-        <!-- Start Exam Button -->
-        <button class="btn btn-primary mt-3" type="button"
-                data-toggle="collapse" data-target="#examSection">
+        <button class="btn btn-primary mt-3"
+                type="button"
+                data-toggle="collapse"
+                data-target="#examSection">
             Start Exam
         </button>
 
-        <!-- Collapsible Exam -->
         <div id="examSection" class="collapse mt-3">
 
             <form method="POST" action="{% url 'onlinecourse:submit' course.id %}">
@@ -85,6 +81,7 @@
                         <div class="card-header">
                             <strong>Question {{ forloop.counter }}:</strong>
                             {{ question.content }}
+
                             <span class="badge badge-info float-right">
                                 Grade: {{ question.grade }}
                             </span>
@@ -92,7 +89,8 @@
 
                         <div class="card-body">
 
-                            {% for choice in question.choice_set.all %}
+                            <!-- ✅ FIX: use question.choices.all (NOT choice_set) -->
+                            {% for choice in question.choices.all %}
                                 <div class="form-check">
                                     <input class="form-check-input"
                                            type="checkbox"
